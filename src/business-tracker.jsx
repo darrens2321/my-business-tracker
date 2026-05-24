@@ -241,7 +241,7 @@ export default function App() {
         {[
           {sc:"finance",icon:"📊",title:"Finance Tracker",sub:"Income · Expenses · HST · Budget",note:`${month}: ${fmt(stats.totalRev)} income`,color:"#c8a96e"},
           {sc:"clients",icon:"👥",title:"Client Sessions",sub:"Track packages · Log sessions · Send messages",note:`${clients.length} clients loaded`,color:"#3498db"},
-          {sc:"kids",icon:"💰",title:"Savings",sub:"TFSA $8,015 · RESP $5,806 · Kids allowance",note:"Tap to track contributions",color:"#1a6b3a"},
+          {sc:"kids",icon:"💰",title:"Savings",sub:"TFSA · RESP · Kids allowance",note:`TFSA ${fmt(8015+MONTHS.filter(m=>m<=month).length*200+Object.values(tfsaExtra).reduce((s,v)=>s+Number(v),0))} · RESP ${fmt(5806+Object.values(respContrib["resp"]||{}).reduce((s,v)=>s+Number(v),0))}`,color:"#1a6b3a"},
         ].map(b=>(
           <button key={b.sc} onClick={()=>setScreen(b.sc)} style={{background:"#fff",border:"none",borderRadius:14,padding:20,textAlign:"left",cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",borderLeft:`5px solid ${b.color}`}}>
             <div style={{fontSize:26,marginBottom:6}}>{b.icon}</div>
@@ -575,9 +575,9 @@ export default function App() {
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                       <div style={{flex:1}}>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          {(e.spends||[]).reduce((s,x)=>s+x.amount,0)>=e.budget
+                          {e.paid
                             ?<span onClick={()=>markUnpaid(e.id)} style={{fontSize:18,cursor:"pointer"}}>✅</span>
-                            :<span onClick={()=>{setEditActual(e.id);setActualInput("");}} style={{width:22,height:22,borderRadius:"50%",border:"2px solid #3498db",display:"inline-flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:13,color:"#3498db"}}>+</span>}
+                            :<span onClick={()=>markPaid(e.id,"")} style={{width:26,height:26,borderRadius:"50%",border:"2px solid #2ecc71",display:"inline-flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:15,color:"#2ecc71",fontWeight:900}}>✓</span>}
                           <span style={{fontWeight:700,fontSize:13}}>{e.name}</span>
                           {e.cash&&<span style={{fontSize:9,background:"#f0d060",color:"#7a6010",borderRadius:4,padding:"1px 5px",fontWeight:700}}>CASH</span>}
                         </div>
@@ -589,6 +589,7 @@ export default function App() {
   onBlur={ev=>{updBudget(e.id,ev.target.value);setBudgetEdits(p=>{const u={...p};delete u[e.id];return u;});}}
   style={{width:70,border:"none",borderBottom:"1px dashed #3498db",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:700,color:"#3498db",outline:"none",padding:"0 2px"}}
 />
+                          <span onClick={()=>{setEditActual(e.id);setActualInput("");}} style={{fontSize:10,color:"#3498db",cursor:"pointer",textDecoration:"underline",marginLeft:4}}>+ log $</span>
                         </div>
                         {/* SPEND TRACKER */}
                         {(()=>{
@@ -899,6 +900,33 @@ export default function App() {
             </div>
             <div style={{fontSize:9,color:"#aaa",marginTop:4}}>{stats.budget?((stats.totalPaid/stats.budget)*100).toFixed(0):0}% used</div>
           </div>
+
+          {/* SAVINGS SNAPSHOT */}
+          {(()=>{
+            const tfsaBal=8015+MONTHS.filter(m=>m<=month).length*200+Object.values(tfsaExtra).reduce((s,v)=>s+Number(v),0);
+            const respBal=5806+Object.values(respContrib["resp"]||{}).reduce((s,v)=>s+Number(v),0);
+            return(
+              <div style={{background:"#fff",borderRadius:12,padding:16,marginBottom:12,border:"2px solid #1a6b3a"}}>
+                <div style={{fontSize:9,letterSpacing:3,color:"#aaa",marginBottom:12}}>💰 SAVINGS SNAPSHOT</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  <div style={{background:"#1a6b3a",borderRadius:10,padding:"12px 14px"}}>
+                    <div style={{fontSize:9,color:"#5dbb7a",letterSpacing:2}}>TFSA</div>
+                    <div style={{fontSize:22,fontWeight:900,color:"#2ecc71",marginTop:4}}>{fmt(tfsaBal)}</div>
+                    <div style={{fontSize:9,color:"#5dbb7a",marginTop:4}}>$200/mo auto</div>
+                  </div>
+                  <div style={{background:"#e8f4fd",borderRadius:10,padding:"12px 14px"}}>
+                    <div style={{fontSize:9,color:"#1a5276",letterSpacing:2}}>RESP</div>
+                    <div style={{fontSize:22,fontWeight:900,color:"#3498db",marginTop:4}}>{fmt(respBal)}</div>
+                    <div style={{fontSize:9,color:"#3498db",marginTop:4}}>kids education</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:10,borderTop:"1px solid #eee"}}>
+                  <span style={{fontSize:12,fontWeight:700}}>Total saved</span>
+                  <span style={{fontSize:16,fontWeight:900,color:"#1a6b3a"}}>{fmt(tfsaBal+respBal)}</span>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* All months */}
           <div style={{background:"#fff",borderRadius:10,padding:14}}>
