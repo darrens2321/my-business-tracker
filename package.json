@@ -1,4 +1,4 @@
-json{
+{
   "name": "my-business-tracker",
   "version": "1.0.0",
   "scripts": {
