@@ -65,8 +65,8 @@ const INIT_CLIENTS = Object.keys(MAY).map(name=>({
 const buildRevenue = () => {
   const r={};
   MONTHS.forEach(m=>{
-    const clients=INIT_CLIENTS.map(c=>({id:genId(),clientId:c.id,name:c.name,amount:m==="May"?(MAY[c.name]||0):0,cash:c.cash,note:""}));
-    const ccb={id:genId(),name:"CCB — Canada Child Benefit",amount:833.49,cash:true,note:"Government benefit · tax-free",fixed:true};
+    const clients=INIT_CLIENTS.map(c=>({id:genId(),clientId:c.id,name:c.name,amount:m==="May"?(MAY[c.name]||0):0,cash:c.cash,note:"",paid:false}));
+    const ccb={id:genId(),name:"CCB — Canada Child Benefit",amount:833.49,cash:true,note:"Government benefit · tax-free",fixed:true,paid:false};
     r[m]=[...clients,ccb];
   });
   return r;
@@ -152,6 +152,7 @@ export default function App() {
   // Revenue
   const updRevAmt=(id,val)=>setRevenue(p=>({...p,[month]:p[month].map(r=>r.id===id?{...r,amount:Number(val)}:r)}));
   const togCashRev=(id)=>setRevenue(p=>({...p,[month]:p[month].map(r=>r.id===id?{...r,cash:!r.cash}:r)}));
+  const togPaidRev=(id)=>setRevenue(p=>({...p,[month]:p[month].map(r=>r.id===id?{...r,paid:!r.paid}:r)}));
 
   // Expenses
   const markPaid=(id,amt)=>{setExpenses(p=>({...p,[month]:p[month].map(e=>e.id===id?{...e,paid:true,actual:amt!==""?Number(amt):e.budget}:e)}));setEditActual(null);setActualInput("");};
@@ -663,10 +664,13 @@ export default function App() {
             <div style={{fontSize:24,fontWeight:900,color:"#1a7a3a"}}>{fmt(stats.totalCard)}</div>
             <div style={{fontSize:10,color:"#c8a96e",marginTop:2}}>HST collected: {fmt(stats.hstCollected)}</div>
           </div>
-          <div style={{fontSize:10,color:"#aaa",marginBottom:10}}>✏️ Tap any amount to edit directly · Tap 💵 to move to cash</div>
+          <div style={{fontSize:10,color:"#aaa",marginBottom:10}}>✅ {mRevRows.filter(r=>!r.cash&&r.paid).length}/{mRevRows.filter(r=>!r.cash).length} collected · Tap ✓ to mark paid</div>
           {mRevRows.filter(r=>!r.cash).map(r=>(
-            <div key={r.id} style={{background:"#fff",border:"1px solid #e8e8e8",borderRadius:10,padding:"11px 13px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-              <div><div style={{fontWeight:700,fontSize:13}}>{r.name}</div><div style={{fontSize:10,color:"#c8a96e",marginTop:2}}>HST: {fmt(extractHST(r.amount))}</div></div>
+            <div key={r.id} style={{background:r.paid?"#f0faf4":"#fff",border:`1px solid ${r.paid?"#a9dfbf":"#e8e8e8"}`,borderRadius:10,padding:"11px 13px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span onClick={()=>togPaidRev(r.id)} style={{width:28,height:28,borderRadius:"50%",border:`2px solid ${r.paid?"#2ecc71":"#2ecc71"}`,background:r.paid?"#2ecc71":"transparent",display:"inline-flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14,color:r.paid?"#fff":"#2ecc71",flexShrink:0}}>✓</span>
+                <div><div style={{fontWeight:700,fontSize:13}}>{r.name}</div><div style={{fontSize:10,color:"#c8a96e",marginTop:2}}>HST: {fmt(extractHST(r.amount))}</div></div>
+              </div>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
                 <input
   value={revEdits[r.id]!==undefined ? revEdits[r.id] : String(r.amount)}
@@ -690,9 +694,14 @@ export default function App() {
           </div>
           {mRevRows.filter(r=>r.cash).length===0
             ?<div style={{textAlign:"center",color:"#ccc",padding:"40px 20px",fontSize:13}}>No cash clients this month.<br/><span style={{fontSize:11}}>Tap 💵 on any card client to move them here.</span></div>
-            :mRevRows.filter(r=>r.cash).map(r=>(
-              <div key={r.id} style={{background:"#fffbe6",border:"1px solid #f0d060",borderRadius:10,padding:"11px 13px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-                <div><div style={{fontWeight:700,fontSize:13}}>{r.name}</div><div style={{fontSize:10,color:"#aaa",marginTop:2}}>no HST</div></div>
+            :<>
+            <div style={{fontSize:10,color:"#aaa",marginBottom:10}}>✅ {mRevRows.filter(r=>r.cash&&r.paid).length}/{mRevRows.filter(r=>r.cash).length} collected · Tap ✓ to mark paid</div>
+            {mRevRows.filter(r=>r.cash).map(r=>(
+              <div key={r.id} style={{background:r.paid?"#fffde7":"#fffbe6",border:`1px solid ${r.paid?"#f0d060":"#f0d060"}`,borderRadius:10,padding:"11px 13px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span onClick={()=>togPaidRev(r.id)} style={{width:28,height:28,borderRadius:"50%",border:"2px solid #c8a020",background:r.paid?"#f0d060":"transparent",display:"inline-flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14,color:r.paid?"#7a6010":"#c8a020",flexShrink:0}}>✓</span>
+                  <div><div style={{fontWeight:700,fontSize:13}}>{r.name}</div><div style={{fontSize:10,color:"#aaa",marginTop:2}}>no HST</div></div>
+                </div>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <input
   value={revEdits[r.id]!==undefined ? revEdits[r.id] : String(r.amount)}
@@ -704,7 +713,8 @@ export default function App() {
                   <button onClick={()=>togCashRev(r.id)} title="Move to card" style={{background:"#f0d060",border:"none",borderRadius:6,padding:"4px 7px",fontSize:13,cursor:"pointer"}}>💵</button>
                 </div>
               </div>
-            ))
+            ))}
+            </>
           }
         </>}
 
