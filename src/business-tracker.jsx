@@ -411,50 +411,63 @@ export default function App() {
 
           {/* TFSA Card */}
           <div style={{background:"#1a6b3a",color:"#fff",borderRadius:14,padding:20,marginBottom:14}}>
-            <div style={{fontSize:9,letterSpacing:3,color:"#5dbb7a",marginBottom:4}}>💰 TFSA</div>
-            <div style={{fontSize:38,fontWeight:900,color:"#2ecc71",lineHeight:1}}>{fmt(tfsaBalance)}</div>
-            <div style={{fontSize:10,color:"#5dbb7a",marginTop:6}}>started at $8,015 · +$200/month from May 15</div>
-            <div style={{height:1,background:"#155a2e",margin:"14px 0"}}/>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-              <div style={{background:"#155a2e",borderRadius:10,padding:"10px 10px"}}>
-                <div style={{fontSize:8,color:"#5dbb7a",letterSpacing:1}}>STARTING</div>
-                <div style={{fontWeight:700,fontSize:14,marginTop:3}}>$8,015</div>
-              </div>
-              <div style={{background:"#155a2e",borderRadius:10,padding:"10px 10px"}}>
-                <div style={{fontSize:8,color:"#5dbb7a",letterSpacing:1}}>AUTO $200/mo</div>
-                <div style={{fontWeight:700,fontSize:14,marginTop:3}}>{fmt(tfsaBaseContrib)}</div>
-              </div>
-              <div style={{background:"#155a2e",borderRadius:10,padding:"10px 10px"}}>
-                <div style={{fontSize:8,color:"#5dbb7a",letterSpacing:1}}>EXTRA ADDED</div>
-                <div style={{fontWeight:700,fontSize:14,marginTop:3}}>{fmt(tfsaExtraTotal)}</div>
-              </div>
-              <div style={{background:"#0d3320",borderRadius:10,padding:"10px 10px",border:"1px solid #2ecc71"}}>
-                <div style={{fontSize:8,color:"#2ecc71",letterSpacing:1}}>📈 INTEREST</div>
-                <div style={{fontWeight:700,fontSize:14,marginTop:3,color:"#2ecc71"}}>{tfsaInterest>0?fmt(tfsaInterest):"—"}</div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontSize:11,letterSpacing:3,color:"#5dbb7a",fontWeight:700}}>💰 TFSA</div>
+              <button onClick={()=>{setEditingTfsaInt(true);setTfsaIntInput(String(tfsaInterest||""));}} style={{background:"#2ecc71",color:"#111",border:"none",borderRadius:8,padding:"7px 13px",fontFamily:"inherit",fontWeight:700,fontSize:11,cursor:"pointer"}}>✏️ Update Balance</button>
+            </div>
+            <div style={{fontSize:40,fontWeight:900,color:"#2ecc71",lineHeight:1}}>{fmt(tfsaBalance)}</div>
+            <div style={{fontSize:10,color:"#5dbb7a",marginTop:6,marginBottom:14}}>started at $8,015 · +$200/month from May 15</div>
+
+            {/* Market Gain row */}
+            <div style={{background:"#155a2e",borderRadius:10,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{fontSize:9,letterSpacing:3,color:"#5dbb7a"}}>MARKET GAIN</div>
+              <div style={{fontSize:14,fontWeight:900,color:"#2ecc71"}}>
+                {tfsaInterest>0?`+${fmt(tfsaInterest)} (+${(tfsaInterest/8015*100).toFixed(2)}%)`:"—"}
               </div>
             </div>
 
-            {/* Interest input */}
-            <div style={{background:"#0d3320",borderRadius:10,padding:12,marginBottom:14,border:"1px solid #2ecc71"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <div>
-                  <div style={{fontSize:9,color:"#2ecc71",letterSpacing:2}}>📈 INTEREST / RETURNS (TOTAL)</div>
-                  <div style={{fontSize:18,fontWeight:900,color:"#2ecc71",marginTop:3}}>{tfsaInterest>0?fmt(tfsaInterest):"Not set"}</div>
+            {/* Stats grid */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
+              {[{l:"STARTING",v:"$8,015"},{l:"AUTO $200/mo",v:fmt(tfsaBaseContrib)},{l:"EXTRA ADDED",v:fmt(tfsaExtraTotal)}].map(s=>(
+                <div key={s.l} style={{background:"#155a2e",borderRadius:10,padding:"10px 8px"}}>
+                  <div style={{fontSize:8,color:"#5dbb7a",letterSpacing:1}}>{s.l}</div>
+                  <div style={{fontWeight:700,fontSize:13,marginTop:3}}>{s.v}</div>
                 </div>
-                <button onClick={()=>{setEditingTfsaInt(true);setTfsaIntInput(String(tfsaInterest||""));}} style={{background:"#2ecc71",color:"#111",border:"none",borderRadius:8,padding:"7px 12px",fontFamily:"inherit",fontWeight:700,fontSize:11,cursor:"pointer"}}>✏️ Edit</button>
+              ))}
+            </div>
+
+            {/* Gains card */}
+            <div style={{background:"#fff",borderRadius:12,padding:16,marginBottom:14,color:"#111"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}>
+                <span style={{fontSize:12}}>📊</span>
+                <div style={{fontSize:9,letterSpacing:3,color:"#888",fontWeight:700}}>MANULIFE TFSA GAINS</div>
               </div>
-              {editingTfsaInt&&(
-                <div style={{display:"flex",alignItems:"center",gap:8,marginTop:10,background:"#061a0e",borderRadius:8,padding:10}}>
-                  <span style={{fontSize:11,color:"#2ecc71"}}>Interest $:</span>
+              <div style={{fontSize:11,color:"#888",marginBottom:8}}>Investment gains so far</div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+                <div style={{fontSize:28,fontWeight:900,color:"#2ecc71"}}>{tfsaInterest>0?`+${fmt(tfsaInterest)}`:"—"}</div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontSize:9,color:"#aaa",letterSpacing:1}}>TOTAL WITH GAINS</div>
+                  <div style={{fontSize:20,fontWeight:900,color:"#111"}}>{fmt(tfsaBalance)}</div>
+                </div>
+              </div>
+              {tfsaInterest>0&&<div style={{fontSize:10,color:"#aaa",marginTop:8}}>{(tfsaInterest/8015*100).toFixed(2)}% return on $8,015</div>}
+            </div>
+
+            {/* Update gains input */}
+            {editingTfsaInt&&(
+              <div style={{background:"#0d3320",borderRadius:10,padding:12,marginBottom:14,border:"1px solid #2ecc71"}}>
+                <div style={{fontSize:9,color:"#5dbb7a",letterSpacing:2,marginBottom:8}}>UPDATE GAINS / INTEREST</div>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:11,color:"#5dbb7a"}}>Total gains $:</span>
                   <input autoFocus value={tfsaIntInput} onChange={e=>setTfsaIntInput(e.target.value)} type="number" placeholder="0"
-                    style={{width:90,border:"1px solid #2ecc71",borderRadius:6,background:"#0a2218",color:"#2ecc71",fontFamily:"inherit",fontSize:14,fontWeight:700,outline:"none",padding:"5px 8px"}}/>
-                  <button onClick={()=>{setTfsaInterest(Number(tfsaIntInput));setEditingTfsaInt(false);setTfsaIntInput("");}} style={{background:"#2ecc71",color:"#111",border:"none",borderRadius:6,padding:"6px 12px",fontFamily:"inherit",fontWeight:700,fontSize:12,cursor:"pointer"}}>Save</button>
-                  <button onClick={()=>setEditingTfsaInt(false)} style={{background:"none",border:"none",color:"#5dbb7a",fontFamily:"inherit",fontSize:11,cursor:"pointer"}}>Cancel</button>
+                    style={{flex:1,border:"1px solid #2ecc71",borderRadius:6,background:"#0a2218",color:"#2ecc71",fontFamily:"inherit",fontSize:14,fontWeight:700,outline:"none",padding:"6px 10px"}}/>
+                  <button onClick={()=>{setTfsaInterest(Number(tfsaIntInput));setEditingTfsaInt(false);setTfsaIntInput("");}} style={{background:"#2ecc71",color:"#111",border:"none",borderRadius:6,padding:"7px 14px",fontFamily:"inherit",fontWeight:700,fontSize:12,cursor:"pointer"}}>Save</button>
+                  <button onClick={()=>setEditingTfsaInt(false)} style={{background:"none",border:"none",color:"#5dbb7a",fontFamily:"inherit",fontSize:12,cursor:"pointer"}}>✕</button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* Extra contribution per month */}
+            {/* Extra this month */}
             <div style={{background:"#155a2e",borderRadius:10,padding:12}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <div>
@@ -472,12 +485,10 @@ export default function App() {
                   <button onClick={()=>setEditingTfsa(null)} style={{background:"none",border:"none",color:"#5dbb7a",fontFamily:"inherit",fontSize:11,cursor:"pointer"}}>Cancel</button>
                 </div>
               )}
-              {/* Monthly breakdown */}
               <div style={{marginTop:10}}>
                 {MONTHS.filter(m=>(tfsaExtra[m]||0)>0).map(m=>(
                   <div key={m} style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#5dbb7a",padding:"4px 0",borderTop:"1px solid #1a6b3a"}}>
-                    <span>{m} extra</span>
-                    <span style={{fontWeight:700,color:"#2ecc71"}}>{fmt(tfsaExtra[m])}</span>
+                    <span>{m} extra</span><span style={{fontWeight:700,color:"#2ecc71"}}>{fmt(tfsaExtra[m])}</span>
                   </div>
                 ))}
               </div>
@@ -486,10 +497,51 @@ export default function App() {
 
           {/* RESP Card */}
           <div style={{background:"#fff",borderRadius:14,padding:20,marginBottom:14,border:"2px solid #3498db"}}>
-            <div style={{fontSize:9,letterSpacing:3,color:"#aaa",marginBottom:4}}>📈 RESP — KIDS</div>
-            <div style={{fontSize:38,fontWeight:900,color:"#3498db",lineHeight:1}}>{fmt(respBalance)}</div>
-            <div style={{fontSize:10,color:"#aaa",marginTop:6}}>started at $5,806 · add whenever you decide</div>
-            <div style={{height:1,background:"#eee",margin:"14px 0"}}/>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontSize:11,letterSpacing:3,color:"#3498db",fontWeight:700}}>📈 RESP — KIDS</div>
+              <button onClick={()=>{setEditingRespInt(true);setRespIntInput(String(respInterest||""));}} style={{background:"#3498db",color:"#fff",border:"none",borderRadius:8,padding:"7px 13px",fontFamily:"inherit",fontWeight:700,fontSize:11,cursor:"pointer"}}>✏️ Update Balance</button>
+            </div>
+            <div style={{fontSize:40,fontWeight:900,color:"#3498db",lineHeight:1}}>{fmt(respBalance)}</div>
+            <div style={{fontSize:10,color:"#aaa",marginTop:6,marginBottom:14}}>started at $5,806 · add whenever you decide</div>
+
+            {/* Market Gain row */}
+            <div style={{background:"#e8f4fd",borderRadius:10,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{fontSize:9,letterSpacing:3,color:"#3498db"}}>MARKET GAIN</div>
+              <div style={{fontSize:14,fontWeight:900,color:"#27ae60"}}>
+                {respInterest>0?`+${fmt(respInterest)} (+${(respInterest/5806*100).toFixed(2)}%)`:"—"}
+              </div>
+            </div>
+
+            {/* Gains card */}
+            <div style={{background:"#f7fbff",borderRadius:12,padding:16,marginBottom:14,border:"1px solid #d6eaf8"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}>
+                <span style={{fontSize:12}}>📊</span>
+                <div style={{fontSize:9,letterSpacing:3,color:"#888",fontWeight:700}}>RESP GAINS</div>
+              </div>
+              <div style={{fontSize:11,color:"#888",marginBottom:8}}>Investment gains so far</div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+                <div style={{fontSize:28,fontWeight:900,color:"#27ae60"}}>{respInterest>0?`+${fmt(respInterest)}`:"—"}</div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontSize:9,color:"#aaa",letterSpacing:1}}>TOTAL WITH GAINS</div>
+                  <div style={{fontSize:20,fontWeight:900,color:"#3498db"}}>{fmt(respBalance)}</div>
+                </div>
+              </div>
+              {respInterest>0&&<div style={{fontSize:10,color:"#aaa",marginTop:8}}>{(respInterest/5806*100).toFixed(2)}% return on $5,806</div>}
+            </div>
+
+            {/* Update gains input */}
+            {editingRespInt&&(
+              <div style={{background:"#e8f4fd",borderRadius:10,padding:12,marginBottom:14,border:"1px solid #3498db"}}>
+                <div style={{fontSize:9,color:"#3498db",letterSpacing:2,marginBottom:8}}>UPDATE GAINS / INTEREST</div>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:11,color:"#3498db"}}>Total gains $:</span>
+                  <input autoFocus value={respIntInput} onChange={e=>setRespIntInput(e.target.value)} type="number" placeholder="0"
+                    style={{flex:1,border:"1px solid #3498db",borderRadius:6,background:"#fff",fontFamily:"inherit",fontSize:14,fontWeight:700,color:"#3498db",outline:"none",padding:"6px 10px"}}/>
+                  <button onClick={()=>{setRespInterest(Number(respIntInput));setEditingRespInt(false);setRespIntInput("");}} style={{background:"#3498db",color:"#fff",border:"none",borderRadius:6,padding:"7px 14px",fontFamily:"inherit",fontWeight:700,fontSize:12,cursor:"pointer"}}>Save</button>
+                  <button onClick={()=>setEditingRespInt(false)} style={{background:"#f0f0f0",color:"#888",border:"none",borderRadius:6,padding:"7px 10px",fontFamily:"inherit",fontSize:12,cursor:"pointer"}}>✕</button>
+                </div>
+              </div>
+            )}
 
             {/* Month selector */}
             <div style={{fontSize:10,color:"#888",marginBottom:8}}>Add contribution for:</div>
@@ -498,12 +550,7 @@ export default function App() {
                 const r=(respContrib["resp"]||{})[m]||0;
                 const a=month===m;
                 return(
-                  <button key={m} onClick={()=>setMonth(m)} style={{
-                    background:a?"#3498db":"#f0f0f0",color:a?"#fff":"#888",
-                    border:"none",borderRadius:8,padding:"7px 12px",
-                    fontFamily:"inherit",fontSize:11,fontWeight:a?900:400,
-                    cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,
-                  }}>
+                  <button key={m} onClick={()=>setMonth(m)} style={{background:a?"#3498db":"#f0f0f0",color:a?"#fff":"#888",border:"none",borderRadius:8,padding:"7px 12px",fontFamily:"inherit",fontSize:11,fontWeight:a?900:400,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>
                     {m}{r>0&&<div style={{fontSize:8,marginTop:1,color:a?"#cce5ff":"#3498db"}}>${r}</div>}
                   </button>
                 );
@@ -515,10 +562,7 @@ export default function App() {
                 <div style={{fontSize:11,color:"#888"}}>{month} contribution</div>
                 <div style={{fontSize:24,fontWeight:900,color:"#3498db"}}>{monthRESP===0?"—":fmt(monthRESP)}</div>
               </div>
-              <button onClick={()=>{setEditingResp(month);setRespInput(String(monthRESP||""));}} style={{
-                background:"#3498db",color:"#fff",border:"none",borderRadius:8,
-                padding:"8px 14px",fontFamily:"inherit",fontWeight:700,fontSize:12,cursor:"pointer",
-              }}>+ Add</button>
+              <button onClick={()=>{setEditingResp(month);setRespInput(String(monthRESP||""));}} style={{background:"#3498db",color:"#fff",border:"none",borderRadius:8,padding:"8px 14px",fontFamily:"inherit",fontWeight:700,fontSize:12,cursor:"pointer"}}>+ Add</button>
             </div>
 
             {editingResp===month&&(
