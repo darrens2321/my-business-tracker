@@ -51,7 +51,7 @@ const RECURRING = [
 
 const buildMonthExpenses = () => {
   const r={};
-  MONTHS.forEach(m=>{r[m]=RECURRING.map(rec=>({...rec,id:genId(),recurringId:rec.id,actual:null,paid:false,note:"",spends:[]}));});
+  MONTHS.forEach(m=>{r[m]=RECURRING.map(rec=>({...rec,id:genId(),recurringId:rec.id,actual:m==="May"?rec.budget:null,paid:m==="May",note:"",spends:[]}));});
   return r;
 };
 
@@ -94,7 +94,7 @@ export default function App() {
   const [newCli,setNewCli]   = useState({name:"",phone:"",totalSessions:"",packagePrice:"",cash:false});
   const [msgData,setMsgData] = useState(null);
   const [copied,setCopied]   = useState(false);
-  const [startingBalance,setStartingBalance] = useState(()=>load("bt_startbal", 4000));
+  const [startingBalance,setStartingBalance] = useState(()=>load("bt_startbal", 6000));
   const [editingBalance,setEditingBalance] = useState(false);
   const [budgetEdits,setBudgetEdits] = useState({});
   const [revEdits,setRevEdits] = useState({});
