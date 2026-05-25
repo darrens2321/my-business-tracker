@@ -91,7 +91,9 @@ export default function App() {
   const [editRecId,setEditRecId]     = useState(null);
   const [recForm,setRecForm]         = useState(null);
   const [expForm,setExpForm] = useState({name:"",budget:"",category:"Other",cash:false});
+  const [expErr,setExpErr]   = useState("");
   const [newCli,setNewCli]   = useState({name:"",phone:"",totalSessions:"",packagePrice:"",cash:false});
+  const [cliErr,setCliErr]   = useState("");
   const [msgData,setMsgData] = useState(null);
   const [copied,setCopied]   = useState(false);
   const [startingBalance,setStartingBalance] = useState(()=>load("bt_startbal", 6000));
@@ -167,7 +169,7 @@ export default function App() {
   const markUnpaid=(id)=>setExpenses(p=>({...p,[month]:p[month].map(e=>e.id===id?{...e,paid:false,actual:null}:e)}));
   const updBudget=(id,v)=>setExpenses(p=>({...p,[month]:p[month].map(e=>e.id===id?{...e,budget:Number(v)}:e)}));
   const togCashExp=(id)=>setExpenses(p=>({...p,[month]:p[month].map(e=>e.id===id?{...e,cash:!e.cash}:e)}));
-  const delExp=(id)=>setExpenses(p=>({...p,[month]:p[month].filter(e=>e.id!==id)}));
+  const delExp=(id,name)=>{if(!window.confirm(`Delete "${name}"?`))return;setExpenses(p=>({...p,[month]:p[month].filter(e=>e.id!==id)}));};
   const logSpend=(id,amt)=>{
     if(!amt||Number(amt)<=0)return;
     setExpenses(p=>({...p,[month]:p[month].map(e=>{
@@ -177,7 +179,8 @@ export default function App() {
       return{...e,spends,actual:used,paid:used>=e.budget};
     })}));
   };
-  const removeSpend=(expId,spendId)=>{
+  const removeSpend=(expId,spendId,amt)=>{
+    if(!window.confirm(`Remove $${amt} spend?`))return;
     setExpenses(p=>({...p,[month]:p[month].map(e=>{
       if(e.id!==expId)return e;
       const spends=(e.spends||[]).filter(x=>x.id!==spendId);
@@ -186,7 +189,9 @@ export default function App() {
     })}));
   };
   const addExp=()=>{
-    if(!expForm.name.trim()||!expForm.budget)return;
+    if(!expForm.name.trim()){setExpErr("Name is required.");return;}
+    if(!expForm.budget||Number(expForm.budget)<=0){setExpErr("Enter a valid amount greater than $0.");return;}
+    setExpErr("");
     setExpenses(p=>({...p,[month]:[...(p[month]||[]),{...expForm,id:genId(),budget:Number(expForm.budget),actual:null,paid:false}]}));
     setExpForm({name:"",budget:"",category:"Other",cash:false});setShowAddExp(false);
   };
@@ -199,14 +204,16 @@ export default function App() {
 
   // Clients
   const addClient=()=>{
-    if(!newCli.name.trim())return;
-    const c={...newCli,id:genId(),totalSessions:Number(newCli.totalSessions)||0,packagePrice:Number(newCli.packagePrice)||0,sessionsUsed:0,sessions:[],active:true};
+    if(!newCli.name.trim()){setCliErr("Client name is required.");return;}
+    if(clients.some(c=>c.name.toLowerCase()===newCli.name.trim().toLowerCase())){setCliErr("A client with that name already exists.");return;}
+    setCliErr("");
+    const c={...newCli,name:newCli.name.trim(),id:genId(),totalSessions:Number(newCli.totalSessions)||0,packagePrice:Number(newCli.packagePrice)||0,sessionsUsed:0,sessions:[],active:true};
     setClients(p=>[...p,c]);
     setRevenue(p=>{const u={...p};MONTHS.forEach(m=>{u[m]=[...(u[m]||[]),{id:genId(),name:c.name,amount:0,cash:c.cash,note:""}];});return u;});
     setNewCli({name:"",phone:"",totalSessions:"",packagePrice:"",cash:false});setClientView("list");
   };
   const addSession=(cid)=>setClients(p=>p.map(c=>{if(c.id!==cid)return c;const u=c.sessionsUsed+1;return{...c,sessionsUsed:u,sessions:[...c.sessions,{id:genId(),date:new Date().toLocaleDateString("en-CA"),remaining:c.totalSessions-u}]};}));
-  const removeSession=(cid)=>setClients(p=>p.map(c=>{if(c.id!==cid||c.sessionsUsed===0)return c;return{...c,sessionsUsed:c.sessionsUsed-1,sessions:c.sessions.slice(0,-1)};}));
+  const removeSession=(cid)=>{if(!window.confirm("Remove the last logged session?"))return;setClients(p=>p.map(c=>{if(c.id!==cid||c.sessionsUsed===0)return c;return{...c,sessionsUsed:c.sessionsUsed-1,sessions:c.sessions.slice(0,-1)};}));};
   const buildMsg=(c)=>{const rem=c.totalSessions-c.sessionsUsed;if(rem<=0)return `Hi ${c.name.split(" ")[0]}! 🏋️ Session ${c.sessionsUsed} complete — you've finished your full package of ${c.totalSessions} sessions! Amazing work 💪 Ready to start a new package? Let me know!`;return `Hi ${c.name.split(" ")[0]}! 🏋️ Session ${c.sessionsUsed} of ${c.totalSessions} complete. You have ${rem} session${rem===1?"":"s"} remaining in your package. Great work today! 💪`;};
 
   const exportData = () => {
@@ -381,6 +388,7 @@ export default function App() {
         <TopBar title="New Client" back={()=>setClientView("list")}/>
         <div style={{padding:16}}>
           <div style={{background:"#fff",borderRadius:12,padding:16}}>
+            {cliErr&&<div style={{background:"#fff0f0",border:"1px solid #e74c3c",borderRadius:6,padding:"8px 10px",marginBottom:12,fontSize:12,color:"#c0392b"}}>⚠️ {cliErr}</div>}
             {[{label:"Client Name *",key:"name",type:"text",ph:"Full name"},{label:"Phone Number",key:"phone",type:"tel",ph:"416-555-1234"},{label:"Total Sessions",key:"totalSessions",type:"number",ph:"e.g. 10"},{label:"Package Price ($)",key:"packagePrice",type:"number",ph:"e.g. 500"}].map(f=>(
               <div key={f.key} style={{marginBottom:12}}>
                 <label style={{fontSize:10,color:"#aaa",letterSpacing:1,display:"block",marginBottom:4}}>{f.label}</label>
@@ -755,7 +763,7 @@ export default function App() {
                                 <div key={x.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:11,marginBottom:3}}>
                                   <span style={{color:"#888"}}>{x.date}</span>
                                   <span style={{fontWeight:700,color:"#555"}}>−{fmt(x.amount)}</span>
-                                  <button onClick={()=>removeSpend(e.id,x.id)} style={{background:"none",border:"none",color:"#ccc",fontSize:12,cursor:"pointer",padding:"0 2px"}}>✕</button>
+                                  <button onClick={()=>removeSpend(e.id,x.id,x.amount)} style={{background:"none",border:"none",color:"#ccc",fontSize:12,cursor:"pointer",padding:"0 2px"}}>✕</button>
                                 </div>
                               ))}
                             </div>}
@@ -772,7 +780,7 @@ export default function App() {
                       </div>
                       <div style={{display:"flex",flexDirection:"column",gap:4}}>
                         <button onClick={()=>togCashExp(e.id)} style={{background:e.cash?"#f0d060":"#f0f0f0",border:"none",borderRadius:6,padding:"3px 7px",fontSize:13,cursor:"pointer"}}>💵</button>
-                        <button onClick={()=>delExp(e.id)} style={{background:"#fff0f0",border:"none",borderRadius:6,padding:"3px 7px",fontSize:11,cursor:"pointer",color:"#c84444"}}>🗑</button>
+                        <button onClick={()=>delExp(e.id,e.name)} style={{background:"#fff0f0",border:"none",borderRadius:6,padding:"3px 7px",fontSize:11,cursor:"pointer",color:"#c84444"}}>🗑</button>
                       </div>
                     </div>
                   </div>
@@ -780,8 +788,9 @@ export default function App() {
               })}
             </div>
           ))}
-          <Btn onClick={()=>setShowAddExp(s=>!s)} bg={showAddExp?"#999":"#e74c3c"}>{showAddExp?"✕ Cancel":"+ Add One-Off Expense"}</Btn>
+          <Btn onClick={()=>{setShowAddExp(s=>!s);setExpErr("");}} bg={showAddExp?"#999":"#e74c3c"}>{showAddExp?"✕ Cancel":"+ Add One-Off Expense"}</Btn>
           {showAddExp&&<div style={{background:"#fff",border:"1px solid #e0e0e0",borderRadius:10,padding:14,marginTop:10}}>
+            {expErr&&<div style={{background:"#fff0f0",border:"1px solid #e74c3c",borderRadius:6,padding:"8px 10px",marginBottom:10,fontSize:12,color:"#c0392b"}}>⚠️ {expErr}</div>}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
               <div><label style={{fontSize:9,color:"#aaa",display:"block",marginBottom:3}}>NAME</label><input value={expForm.name} onChange={e=>setExpForm(f=>({...f,name:e.target.value}))} style={{width:"100%",background:"#f9f9f9",border:"1px solid #e0e0e0",borderRadius:6,padding:"7px 9px",fontFamily:"inherit",fontSize:12,boxSizing:"border-box",outline:"none"}}/></div>
               <div><label style={{fontSize:9,color:"#aaa",display:"block",marginBottom:3}}>AMOUNT ($)</label><input value={expForm.budget} onChange={e=>setExpForm(f=>({...f,budget:e.target.value}))} type="number" style={{width:"100%",background:"#f9f9f9",border:"1px solid #e0e0e0",borderRadius:6,padding:"7px 9px",fontFamily:"inherit",fontSize:12,boxSizing:"border-box",outline:"none"}}/></div>
