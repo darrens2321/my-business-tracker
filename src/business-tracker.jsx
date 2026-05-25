@@ -245,8 +245,8 @@ export default function App() {
   const TopBar=({title,back,right})=>(
     <div style={{background:"#111",color:"#fff",padding:"18px 16px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
-        {back&&<button onClick={back} style={{background:"none",border:"none",color:"#c8a96e",fontSize:22,cursor:"pointer",padding:0,lineHeight:1}}>‹</button>}
-        <div><div style={{fontSize:9,letterSpacing:4,color:"#555"}}>MY BUSINESS</div><div style={{fontSize:19,fontWeight:900}}>{title}</div></div>
+        {back&&<button onClick={back} style={{background:"none",border:"none",color:"#FF6600",fontSize:22,cursor:"pointer",padding:0,lineHeight:1}}>‹</button>}
+        <div><div style={{fontSize:9,letterSpacing:4,color:"#FF6600"}}>BYF</div><div style={{fontSize:19,fontWeight:900}}>{title}</div></div>
       </div>
       {right||<div/>}
     </div>
@@ -254,7 +254,7 @@ export default function App() {
   const MonthBar=()=>(
     <div style={{display:"flex",overflowX:"auto",background:"#111"}}>
       {MONTHS.map(m=>{const rev=(revenue[m]||[]).reduce((s,r)=>s+Number(r.amount),0);const a=month===m;return(
-        <button key={m} onClick={()=>setMonth(m)} style={{background:a?"#f7f7f5":"transparent",color:a?"#111":"#666",border:"none",borderTop:a?"3px solid #c8a96e":"3px solid transparent",padding:"9px 13px 7px",fontFamily:"inherit",fontSize:11,fontWeight:a?900:400,cursor:"pointer",whiteSpace:"nowrap"}}>
+        <button key={m} onClick={()=>setMonth(m)} style={{background:a?"#f7f7f5":"transparent",color:a?"#111":"#666",border:"none",borderTop:a?"3px solid #FF6600":"3px solid transparent",padding:"9px 13px 7px",fontFamily:"inherit",fontSize:11,fontWeight:a?900:400,cursor:"pointer",whiteSpace:"nowrap"}}>
           {m}{rev>0&&<div style={{fontSize:8,color:a?"#888":"#555",marginTop:1}}>{fmt(rev).slice(0,7)}</div>}
         </button>);
       })}
@@ -263,7 +263,7 @@ export default function App() {
   const FinBar=()=>(
     <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",background:"#fff",borderBottom:"2px solid #eee"}}>
       {[["expenses","💸","Budget"],["income","💰","Card"],["cash","💵","Cash"],["recurring","🔄","Fixed"],["summary","📊","Summary"]].map(([v,ic,lb])=>{
-        const cols={expenses:"#e74c3c",income:"#2ecc71",cash:"#f39c12",recurring:"#3498db",summary:"#c8a96e"};
+        const cols={expenses:"#e74c3c",income:"#2ecc71",cash:"#f39c12",recurring:"#3498db",summary:"#FF6600"};
         return <button key={v} onClick={()=>setFinTab(v)} style={{padding:"9px 2px",background:finTab===v?cols[v]:"#fff",color:finTab===v?"#fff":"#999",border:"none",fontFamily:"inherit",fontSize:9,fontWeight:700,cursor:"pointer"}}><div style={{fontSize:13}}>{ic}</div>{lb}</button>;
       })}
     </div>
@@ -272,15 +272,22 @@ export default function App() {
   // ── HOME ──
   if(screen==="home") return(
     <div style={{minHeight:"100vh",background:"#f7f7f5",fontFamily:"'Georgia',serif"}}>
-      <div style={{background:"#111",color:"#fff",padding:"32px 20px 24px"}}>
-        <div style={{fontSize:10,letterSpacing:4,color:"#555",marginBottom:4}}>WELCOME BACK</div>
-        <div style={{fontSize:26,fontWeight:900}}>My Business</div>
-        <div style={{fontSize:12,color:"#555",marginTop:2}}>Finance · Clients · Sessions</div>
+      <div style={{background:"#000",color:"#fff",padding:"28px 20px 24px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:6}}>
+          <div style={{width:52,height:52,background:"#FF6600",borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <span style={{fontSize:22,fontWeight:900,color:"#fff",letterSpacing:-1}}>BYF</span>
+          </div>
+          <div>
+            <div style={{fontSize:10,letterSpacing:3,color:"#FF6600",marginBottom:2}}>BUILD YOURSELF FITNESS</div>
+            <div style={{fontSize:22,fontWeight:900,lineHeight:1}}>Business Tracker</div>
+            <div style={{fontSize:11,color:"#555",marginTop:2}}>In-Home Personal Training</div>
+          </div>
+        </div>
       </div>
       <div style={{padding:"20px 16px",display:"flex",flexDirection:"column",gap:12}}>
         {[
-          {sc:"finance",icon:"📊",title:"Finance Tracker",sub:"Income · Expenses · HST · Budget",note:`${month}: ${fmt(stats.totalRev)} income`,color:"#c8a96e"},
-          {sc:"clients",icon:"👥",title:"Client Sessions",sub:"Track packages · Log sessions · Send messages",note:`${clients.length} clients loaded`,color:"#3498db"},
+          {sc:"finance",icon:"📊",title:"BYF Finance",sub:"Income · Expenses · HST · Budget",note:`${month}: ${fmt(stats.totalRev)} income`,color:"#FF6600"},
+          {sc:"clients",icon:"👥",title:"Client Sessions",sub:"Packages · Sessions · Messaging",note:`${clients.length} clients active`,color:"#FF6600"},
           {sc:"kids",icon:"💰",title:"Savings",sub:"TFSA · RESP · Kids allowance",note:`TFSA ${fmt(8015+MONTHS.filter(m=>m<=month).length*200+Object.values(tfsaExtra).reduce((s,v)=>s+Number(v),0)+tfsaInterest)} · RESP ${fmt(5806+Object.values(respContrib["resp"]||{}).reduce((s,v)=>s+Number(v),0)+respInterest)}`,color:"#1a6b3a"},
         ].map(b=>(
           <button key={b.sc} onClick={()=>setScreen(b.sc)} style={{background:"#fff",border:"none",borderRadius:14,padding:20,textAlign:"left",cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",borderLeft:`5px solid ${b.color}`}}>
@@ -692,7 +699,7 @@ export default function App() {
   // ── FINANCE ──
   return(
     <div style={{minHeight:"100vh",background:"#f7f7f5",fontFamily:"'Georgia',serif",color:"#1a1a1a"}}>
-      <TopBar title="Finance" back={()=>setScreen("home")} right={<div style={{fontSize:11,color:"#c8a96e",fontWeight:700}}>🇨🇦 ÷1.13</div>}/>
+      <TopBar title="BYF Finance" back={()=>setScreen("home")} right={<div style={{fontSize:11,color:"#FF6600",fontWeight:700}}>🇨🇦 ÷1.13</div>}/>
       <MonthBar/><FinBar/>
       <div style={{padding:"14px 14px 100px"}}>
 
@@ -808,14 +815,14 @@ export default function App() {
           <div style={{background:"#fff",borderRadius:10,padding:"12px 14px",marginBottom:14,borderLeft:"4px solid #2ecc71"}}>
             <div style={{fontSize:9,color:"#aaa",letterSpacing:2}}>TOTAL CARD INCOME — {month}</div>
             <div style={{fontSize:24,fontWeight:900,color:"#1a7a3a"}}>{fmt(stats.totalCard)}</div>
-            <div style={{fontSize:10,color:"#c8a96e",marginTop:2}}>HST collected: {fmt(stats.hstCollected)}</div>
+            <div style={{fontSize:10,color:"#FF6600",marginTop:2}}>HST collected: {fmt(stats.hstCollected)}</div>
           </div>
           <div style={{fontSize:10,color:"#aaa",marginBottom:10}}>✅ {mRevRows.filter(r=>!r.cash&&r.paid).length}/{mRevRows.filter(r=>!r.cash).length} collected · Tap ✓ to mark paid</div>
           {mRevRows.filter(r=>!r.cash).map(r=>(
             <div key={r.id} style={{background:r.paid?"#f0faf4":"#fff",border:`1px solid ${r.paid?"#a9dfbf":"#e8e8e8"}`,borderRadius:10,padding:"11px 13px",display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span onClick={()=>togPaidRev(r.id)} style={{width:28,height:28,borderRadius:"50%",border:`2px solid ${r.paid?"#2ecc71":"#2ecc71"}`,background:r.paid?"#2ecc71":"transparent",display:"inline-flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14,color:r.paid?"#fff":"#2ecc71",flexShrink:0}}>✓</span>
-                <div><div style={{fontWeight:700,fontSize:13}}>{r.name}</div><div style={{fontSize:10,color:"#c8a96e",marginTop:2}}>HST: {fmt(extractHST(r.amount))}</div></div>
+                <div><div style={{fontWeight:700,fontSize:13}}>{r.name}</div><div style={{fontSize:10,color:"#FF6600",marginTop:2}}>HST: {fmt(extractHST(r.amount))}</div></div>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
                 <input
@@ -959,7 +966,7 @@ export default function App() {
           </div>
 
           {/* HST */}
-          <div style={{background:"#fff",borderRadius:12,padding:16,marginBottom:12,border:"2px solid #c8a96e"}}>
+          <div style={{background:"#fff",borderRadius:12,padding:16,marginBottom:12,border:"2px solid #FF6600"}}>
             <div style={{fontSize:9,letterSpacing:3,color:"#aaa",marginBottom:12}}>🇨🇦 HST SUMMARY</div>
             {[
               {l:"HST Collected (card clients)",sub:`on ${fmt(stats.totalCard)}`,v:stats.hstCollected,sign:"+",c:"#2ecc71"},
@@ -999,7 +1006,7 @@ export default function App() {
                 <div style={{fontSize:10,color:"#aaa",marginBottom:12}}>Fixed monthly payment · reassess at 6 months</div>
                 {[
                   {l:"Fixed Tax Payment",sub:"advised by CFO · logged as expense",v:fixedTax,c:"#e74c3c"},
-                  {l:"HST Owed to CRA",sub:"collected minus paid",v:monthlyHST,c:"#c8a96e"},
+                  {l:"HST Owed to CRA",sub:"collected minus paid",v:monthlyHST,c:"#FF6600"},
                 ].map(row=>(
                   <div key={row.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,paddingBottom:10,borderBottom:"1px solid #f0f0f0"}}>
                     <div><div style={{fontSize:12}}>{row.l}</div><div style={{fontSize:9,color:"#bbb"}}>{row.sub}</div></div>
@@ -1111,7 +1118,7 @@ export default function App() {
 
           {/* CATEGORY BREAKDOWN */}
           {(()=>{
-            const catColors={Housing:"#e74c3c",Transport:"#f39c12",Bills:"#9b59b6",Insurance:"#1abc9c",Lifestyle:"#e91e63",Living:"#ff5722",Meals:"#ff9800",Savings:"#2ecc71",Tax:"#c8a96e",Kids:"#3498db",Business:"#00bcd4",Other:"#95a5a6"};
+            const catColors={Housing:"#e74c3c",Transport:"#f39c12",Bills:"#9b59b6",Insurance:"#1abc9c",Lifestyle:"#e91e63",Living:"#ff5722",Meals:"#ff9800",Savings:"#2ecc71",Tax:"#FF6600",Kids:"#3498db",Business:"#00bcd4",Other:"#95a5a6"};
             const catTotals={};
             mExpRows.forEach(e=>{const c=e.category||"Other";catTotals[c]=(catTotals[c]||0)+Number(e.actual??e.budget);});
             const total=Object.values(catTotals).reduce((s,v)=>s+v,0)||1;
