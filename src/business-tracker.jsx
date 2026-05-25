@@ -209,6 +209,31 @@ export default function App() {
   const removeSession=(cid)=>setClients(p=>p.map(c=>{if(c.id!==cid||c.sessionsUsed===0)return c;return{...c,sessionsUsed:c.sessionsUsed-1,sessions:c.sessions.slice(0,-1)};}));
   const buildMsg=(c)=>{const rem=c.totalSessions-c.sessionsUsed;if(rem<=0)return `Hi ${c.name.split(" ")[0]}! 🏋️ Session ${c.sessionsUsed} complete — you've finished your full package of ${c.totalSessions} sessions! Amazing work 💪 Ready to start a new package? Let me know!`;return `Hi ${c.name.split(" ")[0]}! 🏋️ Session ${c.sessionsUsed} of ${c.totalSessions} complete. You have ${rem} session${rem===1?"":"s"} remaining in your package. Great work today! 💪`;};
 
+  const exportData = () => {
+    const keys = ["bt_revenue","bt_expenses","bt_recurring","bt_clients","bt_startbal","bt_resp","bt_tfsaextra","bt_tfsaint","bt_respint"];
+    const data = {version:1, exported:new Date().toISOString()};
+    keys.forEach(k=>{try{data[k]=JSON.parse(localStorage.getItem(k));}catch{}});
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href=url; a.download=`bt-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+  const importData = (e) => {
+    const file = e.target.files?.[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if(!data.version) throw new Error("bad format");
+        ["bt_revenue","bt_expenses","bt_recurring","bt_clients","bt_startbal","bt_resp","bt_tfsaextra","bt_tfsaint","bt_respint"].forEach(k=>{if(data[k]!=null)localStorage.setItem(k,JSON.stringify(data[k]));});
+        window.location.reload();
+      } catch { alert("Invalid backup file. Please use a valid business tracker export."); }
+    };
+    reader.readAsText(file);
+  };
+
   const Btn=({onClick,bg,color="#fff",children,style={}})=><button onClick={onClick} style={{background:bg,color,border:"none",borderRadius:10,padding:12,fontFamily:"inherit",fontWeight:700,fontSize:13,cursor:"pointer",width:"100%",...style}}>{children}</button>;
   const TopBar=({title,back,right})=>(
     <div style={{background:"#111",color:"#fff",padding:"18px 16px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -258,6 +283,17 @@ export default function App() {
             <div style={{marginTop:8,fontSize:12,color:b.color,fontWeight:700}}>{b.note} →</div>
           </button>
         ))}
+        <div style={{background:"#fff",borderRadius:14,padding:16,boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+          <div style={{fontSize:9,letterSpacing:3,color:"#aaa",marginBottom:12}}>💾 DATA BACKUP</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <Btn onClick={exportData} bg="#3498db" style={{fontSize:12}}>📤 Export</Btn>
+            <label style={{background:"#1a6b3a",color:"#fff",borderRadius:10,padding:12,fontFamily:"'Georgia',serif",fontWeight:700,fontSize:12,cursor:"pointer",display:"block",textAlign:"center"}}>
+              📥 Import
+              <input type="file" accept=".json" onChange={importData} style={{display:"none"}}/>
+            </label>
+          </div>
+          <div style={{fontSize:9,color:"#aaa",marginTop:8,textAlign:"center"}}>All data stored locally · export to back up between devices</div>
+        </div>
       </div>
     </div>
   );
