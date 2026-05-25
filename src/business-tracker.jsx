@@ -242,6 +242,19 @@ export default function App() {
   };
 
   const Btn=({onClick,bg,color="#fff",children,style={}})=><button onClick={onClick} style={{background:bg,color,border:"none",borderRadius:10,padding:12,fontFamily:"inherit",fontWeight:700,fontSize:13,cursor:"pointer",width:"100%",...style}}>{children}</button>;
+  const BottomNav=()=>(
+    <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#111",borderTop:"2px solid #222",display:"grid",gridTemplateColumns:"repeat(4,1fr)",zIndex:200}}>
+      {[{sc:"home",icon:"🏠",label:"Home"},{sc:"finance",icon:"📊",label:"Finance"},{sc:"clients",icon:"👥",label:"Clients"},{sc:"kids",icon:"💰",label:"Savings"}].map(({sc,icon,label})=>{
+        const active=screen===sc;
+        return(
+          <button key={sc} onClick={()=>{setScreen(sc);if(sc==="clients"){setClientView("list");}}} style={{background:"none",border:"none",padding:"10px 0 12px",display:"flex",flexDirection:"column",alignItems:"center",gap:2,cursor:"pointer",borderTop:active?"3px solid #FF6600":"3px solid transparent",marginTop:-2}}>
+            <span style={{fontSize:22}}>{icon}</span>
+            <span style={{fontSize:9,letterSpacing:1,fontWeight:active?900:400,color:active?"#FF6600":"#555",fontFamily:"inherit"}}>{label.toUpperCase()}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
   const TopBar=({title,back,right})=>(
     <div style={{background:"#111",color:"#fff",padding:"18px 16px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -284,7 +297,7 @@ export default function App() {
           </div>
         </div>
       </div>
-      <div style={{padding:"20px 16px",display:"flex",flexDirection:"column",gap:12}}>
+      <div style={{padding:"20px 16px 90px",display:"flex",flexDirection:"column",gap:12}}>
         {[
           {sc:"finance",icon:"📊",title:"BYF Finance",sub:"Income · Expenses · HST · Budget",note:`${month}: ${fmt(stats.totalRev)} income`,color:"#FF6600"},
           {sc:"clients",icon:"👥",title:"Client Sessions",sub:"Packages · Sessions · Messaging",note:`${clients.length} clients active`,color:"#FF6600"},
@@ -309,6 +322,7 @@ export default function App() {
           <div style={{fontSize:9,color:"#aaa",marginTop:8,textAlign:"center"}}>All data stored locally · export to back up between devices</div>
         </div>
       </div>
+      <BottomNav/>
     </div>
   );
 
@@ -434,11 +448,12 @@ export default function App() {
     return(
       <div style={{minHeight:"100vh",background:"#f7f7f5",fontFamily:"'Georgia',serif"}}>
         <TopBar title="Clients" back={()=>setScreen("home")}/>
-        <div style={{padding:16,paddingBottom:80}}>
+        <div style={{padding:16,paddingBottom:90}}>
           <Btn onClick={()=>setClientView("add")} bg="#3498db" style={{marginBottom:4}}>+ Add New Client</Btn>
           <CardList list={clients.filter(c=>!c.cash)} label="💳 CARD CLIENTS" labelColor="#888"/>
           <CardList list={clients.filter(c=>c.cash)} label="💵 CASH CLIENTS" labelColor="#7a6010"/>
         </div>
+        <BottomNav/>
       </div>
     );
   }
@@ -692,6 +707,7 @@ export default function App() {
             <div style={{fontSize:10,color:"#aaa",marginTop:6}}>Tracked in monthly Budget tab</div>
           </div>
         </div>
+        <BottomNav/>
       </div>
     );
   }
@@ -1164,6 +1180,7 @@ export default function App() {
           </div>
         </>}
       </div>
+      <BottomNav/>
     </div>
   );
 }
