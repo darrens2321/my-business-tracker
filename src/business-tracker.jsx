@@ -1064,6 +1064,68 @@ export default function App() {
             );
           })()}
 
+          {/* MONTHLY INCOME vs EXPENSES CHART */}
+          {(()=>{
+            const chartData = MONTHS.map(m=>({
+              m,
+              rev:(revenue[m]||[]).reduce((s,r)=>s+Number(r.amount),0),
+              exp:(expenses[m]||[]).filter(e=>e.paid).reduce((s,e)=>s+Number(e.actual??e.budget),0),
+            }));
+            const maxVal = Math.max(...chartData.map(d=>Math.max(d.rev,d.exp)),1);
+            return(
+              <div style={{background:"#fff",borderRadius:12,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div style={{fontSize:9,letterSpacing:3,color:"#aaa"}}>📊 MONTHLY OVERVIEW</div>
+                  <div style={{display:"flex",gap:12}}>
+                    {[["#2ecc71","Income"],["#e74c3c","Expenses"]].map(([c,l])=>(
+                      <div key={l} style={{display:"flex",alignItems:"center",gap:4}}>
+                        <div style={{width:8,height:8,borderRadius:2,background:c}}/>
+                        <span style={{fontSize:9,color:"#aaa"}}>{l}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{display:"flex",alignItems:"flex-end",gap:3,height:90,marginBottom:4}}>
+                  {chartData.map(({m:mn,rev,exp})=>(
+                    <div key={mn} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center"}}>
+                      <div style={{width:"100%",display:"flex",gap:1,alignItems:"flex-end",height:72}}>
+                        <div style={{flex:1,background:"#2ecc71",borderRadius:"2px 2px 0 0",height:`${(rev/maxVal)*100}%`,minHeight:rev>0?2:0,transition:"height 0.4s"}}/>
+                        <div style={{flex:1,background:"#e74c3c",borderRadius:"2px 2px 0 0",height:`${(exp/maxVal)*100}%`,minHeight:exp>0?2:0,transition:"height 0.4s"}}/>
+                      </div>
+                      <div style={{fontSize:8,color:"#aaa",marginTop:3}}>{mn}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* CATEGORY BREAKDOWN */}
+          {(()=>{
+            const catColors={Housing:"#e74c3c",Transport:"#f39c12",Bills:"#9b59b6",Insurance:"#1abc9c",Lifestyle:"#e91e63",Living:"#ff5722",Meals:"#ff9800",Savings:"#2ecc71",Tax:"#c8a96e",Kids:"#3498db",Business:"#00bcd4",Other:"#95a5a6"};
+            const catTotals={};
+            mExpRows.forEach(e=>{const c=e.category||"Other";catTotals[c]=(catTotals[c]||0)+Number(e.actual??e.budget);});
+            const total=Object.values(catTotals).reduce((s,v)=>s+v,0)||1;
+            const entries=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+            if(!entries.length) return null;
+            return(
+              <div style={{background:"#fff",borderRadius:12,padding:16,marginBottom:12}}>
+                <div style={{fontSize:9,letterSpacing:3,color:"#aaa",marginBottom:14}}>{CAT_ICONS["Other"]} {month.toUpperCase()} SPENDING BY CATEGORY</div>
+                {entries.map(([cat,val])=>(
+                  <div key={cat} style={{marginBottom:9}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                      <span style={{fontSize:11}}>{CAT_ICONS[cat]||"📦"} {cat}</span>
+                      <span style={{fontSize:11,fontWeight:700,color:catColors[cat]||"#888"}}>{fmt(val)}<span style={{fontSize:9,color:"#aaa",fontWeight:400,marginLeft:4}}>{((val/total)*100).toFixed(0)}%</span></span>
+                    </div>
+                    <div style={{height:5,background:"#f0f0f0",borderRadius:3,overflow:"hidden"}}>
+                      <div style={{height:"100%",width:`${(val/total)*100}%`,background:catColors[cat]||"#888",borderRadius:3,transition:"width 0.4s"}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
           {/* All months */}
           <div style={{background:"#fff",borderRadius:10,padding:14}}>
             <div style={{fontSize:9,letterSpacing:3,color:"#aaa",marginBottom:10}}>ALL MONTHS AT A GLANCE</div>
