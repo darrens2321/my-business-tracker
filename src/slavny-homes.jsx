@@ -107,63 +107,61 @@ export default function SlavnyHomes() {
       )}
 
       {/* ── HERO ── */}
+      {/*
+        Place your team banner at: public/hero-team.jpg
+        (the wide marketing image with the 3 team members on the left
+        and SLAVNY HOMES / #WEKNOWTHE MARKET on the right)
+      */}
       <section id="home" style={{
         minHeight: '100vh', display: 'flex', flexDirection: 'column',
         background: NAVY, position: 'relative', overflow: 'hidden', paddingTop: 70,
       }}>
-        {/* Split panel: photo + text */}
-        <div style={{ flex: 1, display: 'flex', minHeight: 'calc(100vh - 70px - 120px)' }}>
+        {/* Full-width team image with dark navy overlay */}
+        <div style={{
+          flex: 1,
+          position: 'relative',
+          backgroundImage: 'url(/hero-team.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          minHeight: 'calc(100vh - 70px - 120px)',
+          display: 'flex', alignItems: 'stretch',
+        }}>
+          {/* Dark overlay — lighter on left (shows team), darker on right (text readable) */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to right, rgba(10,25,49,0.25) 0%, rgba(10,25,49,0.55) 45%, rgba(10,25,49,0.82) 100%)',
+            zIndex: 1,
+          }}/>
 
-          {/* Left: team photo */}
-          <div className="hero-photo" style={{
-            flex: '0 0 46%', position: 'relative',
-            background: 'linear-gradient(135deg, #0b1e3d 0%, #16305e 60%, #0e2248 100%)',
-            overflow: 'hidden',
-          }}>
-            {/* Right-edge fade into text panel */}
-            <div style={{
-              position: 'absolute', top: 0, right: 0, bottom: 0, width: '30%',
-              background: `linear-gradient(to right, transparent, ${NAVY})`,
-              zIndex: 2,
-            }}/>
-            {/* Photo placeholder */}
-            <div style={{
-              position: 'absolute', inset: 0, zIndex: 1,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              color: 'rgba(255,255,255,0.1)',
-            }}>
-              <div style={{ fontSize: 100, lineHeight: 1 }}>👨‍👩‍👦</div>
-              <div style={{ fontSize: 10, letterSpacing: 3, marginTop: 14, textAlign: 'center' }}>TEAM PHOTO HERE</div>
-            </div>
-          </div>
+          {/* Left spacer so text sits on the right half */}
+          <div className="hero-photo" style={{ flex: '0 0 46%' }}/>
 
           {/* Right: headline text */}
           <div className="hero-text" style={{
             flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            padding: '40px 6% 40px 3%', position: 'relative', overflow: 'hidden',
+            padding: '40px 6% 40px 2%', position: 'relative', zIndex: 2,
           }}>
-            {/* Giant "SLAVNY" watermark bleeding left */}
+            {/* Giant "SLAVNY" watermark */}
             <div style={{
-              position: 'absolute', left: '-15%', right: '-5%', top: '50%',
+              position: 'absolute', left: '-20%', right: '-5%', top: '50%',
               transform: 'translateY(-50%)',
               fontSize: 'clamp(100px, 20vw, 260px)', fontWeight: 900,
-              color: 'rgba(255,255,255,0.035)', lineHeight: 1,
+              color: 'rgba(255,255,255,0.04)', lineHeight: 1,
               letterSpacing: -8, userSelect: 'none', pointerEvents: 'none',
               whiteSpace: 'nowrap',
             }}>SLAVNY</div>
 
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 'clamp(26px, 3.2vw, 40px)', fontWeight: 900, color: WHITE, letterSpacing: 3, lineHeight: 1 }}>
+              <div style={{ fontSize: 'clamp(26px, 3.2vw, 42px)', fontWeight: 900, color: WHITE, letterSpacing: 3, lineHeight: 1 }}>
                 SLAVNY
               </div>
               <div style={{ fontSize: 'clamp(18px, 2.2vw, 28px)', fontWeight: 400, color: WHITE, letterSpacing: 6, lineHeight: 1, marginBottom: 14 }}>
                 HOMES
               </div>
-              {/* #WEKNOWTHE on one line */}
               <div style={{ fontSize: 'clamp(24px, 3.8vw, 52px)', fontWeight: 900, letterSpacing: -1, lineHeight: 1 }}>
                 <span style={{ color: RED }}>#WE</span><span style={{ color: WHITE }}>KNOWTHE</span>
               </div>
-              {/* MARKET large */}
               <div style={{
                 fontSize: 'clamp(40px, 7vw, 96px)', fontWeight: 900, color: WHITE,
                 letterSpacing: -3, lineHeight: 0.9, marginTop: 2,
