@@ -108,76 +108,115 @@ export default function SlavnyHomes() {
 
       {/* ── HERO ── */}
       <section id="home" style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'stretch',
-        background: `linear-gradient(to right, ${NAVY} 0%, ${NAVY2} 100%)`,
-        position: 'relative', overflow: 'hidden', paddingTop: 70,
+        minHeight: '100vh', display: 'flex', flexDirection: 'column',
+        background: NAVY, position: 'relative', overflow: 'hidden', paddingTop: 70,
       }}>
-        {/* Team photo side */}
-        <div className="hero-photo" style={{
-          flex: '0 0 48%', position: 'relative', minHeight: '80vh',
-          background: `linear-gradient(160deg, #0d2040 0%, #1a3a70 100%)`,
-          display: 'flex', alignItems: 'flex-end',
-        }}>
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(180deg, rgba(10,25,49,0) 40%, rgba(10,25,49,0.85) 100%)',
-            zIndex: 1,
-          }}/>
-          {/* Photo placeholder */}
-          <div style={{
-            position: 'absolute', inset: 0, zIndex: 0,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            color: 'rgba(255,255,255,0.12)',
+        {/* Split panel: photo + text */}
+        <div style={{ flex: 1, display: 'flex', minHeight: 'calc(100vh - 70px - 120px)' }}>
+
+          {/* Left: team photo */}
+          <div className="hero-photo" style={{
+            flex: '0 0 46%', position: 'relative',
+            background: 'linear-gradient(135deg, #0b1e3d 0%, #16305e 60%, #0e2248 100%)',
+            overflow: 'hidden',
           }}>
-            <div style={{ fontSize: 90, lineHeight: 1 }}>👨‍👩‍👦</div>
-            <div style={{ fontSize: 11, letterSpacing: 2, marginTop: 12, textAlign: 'center' }}>TEAM PHOTO HERE</div>
+            {/* Right-edge fade into text panel */}
+            <div style={{
+              position: 'absolute', top: 0, right: 0, bottom: 0, width: '30%',
+              background: `linear-gradient(to right, transparent, ${NAVY})`,
+              zIndex: 2,
+            }}/>
+            {/* Photo placeholder */}
+            <div style={{
+              position: 'absolute', inset: 0, zIndex: 1,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              color: 'rgba(255,255,255,0.1)',
+            }}>
+              <div style={{ fontSize: 100, lineHeight: 1 }}>👨‍👩‍👦</div>
+              <div style={{ fontSize: 10, letterSpacing: 3, marginTop: 14, textAlign: 'center' }}>TEAM PHOTO HERE</div>
+            </div>
           </div>
-          {/* Badges */}
-          <div style={{ position: 'relative', zIndex: 2, padding: '0 30px 30px', display: 'flex', gap: 12 }}>
-            <GoldBadge lines={['CERTIFIED','LUXURY HOME','CLHMS','GUILD']}/>
-            <GoldBadge lines={['CLHMS','MARKETING','SPECIALIST']}/>
+
+          {/* Right: headline text */}
+          <div className="hero-text" style={{
+            flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            padding: '40px 6% 40px 3%', position: 'relative', overflow: 'hidden',
+          }}>
+            {/* Giant "SLAVNY" watermark bleeding left */}
+            <div style={{
+              position: 'absolute', left: '-15%', right: '-5%', top: '50%',
+              transform: 'translateY(-50%)',
+              fontSize: 'clamp(100px, 20vw, 260px)', fontWeight: 900,
+              color: 'rgba(255,255,255,0.035)', lineHeight: 1,
+              letterSpacing: -8, userSelect: 'none', pointerEvents: 'none',
+              whiteSpace: 'nowrap',
+            }}>SLAVNY</div>
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ fontSize: 'clamp(26px, 3.2vw, 40px)', fontWeight: 900, color: WHITE, letterSpacing: 3, lineHeight: 1 }}>
+                SLAVNY
+              </div>
+              <div style={{ fontSize: 'clamp(18px, 2.2vw, 28px)', fontWeight: 400, color: WHITE, letterSpacing: 6, lineHeight: 1, marginBottom: 14 }}>
+                HOMES
+              </div>
+              {/* #WEKNOWTHE on one line */}
+              <div style={{ fontSize: 'clamp(24px, 3.8vw, 52px)', fontWeight: 900, letterSpacing: -1, lineHeight: 1 }}>
+                <span style={{ color: RED }}>#WE</span><span style={{ color: WHITE }}>KNOWTHE</span>
+              </div>
+              {/* MARKET large */}
+              <div style={{
+                fontSize: 'clamp(40px, 7vw, 96px)', fontWeight: 900, color: WHITE,
+                letterSpacing: -3, lineHeight: 0.9, marginTop: 2,
+              }}>MARKET</div>
+            </div>
           </div>
         </div>
 
-        {/* Hero text side */}
-        <div className="hero-text" style={{
-          flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          padding: '60px 5% 60px 4%', position: 'relative', overflow: 'hidden',
+        {/* Bottom strip: badges + stats + CTAs */}
+        <div style={{
+          background: '#060f1e', borderTop: `3px solid ${RED}`,
+          padding: '18px 4%', flexShrink: 0,
         }}>
-          {/* Background watermark */}
-          <div style={{
-            position: 'absolute', right: '-2%', top: '0%',
-            fontSize: 'clamp(90px, 14vw, 180px)', fontWeight: 900,
-            color: 'rgba(255,255,255,0.03)', lineHeight: 1,
-            letterSpacing: -4, userSelect: 'none', whiteSpace: 'nowrap',
-          }}>SLAVNY</div>
-
-          <div style={{ fontSize: 11, color: RED, fontWeight: 700, letterSpacing: 3, marginBottom: 14 }}>
-            RE/MAX HALLMARK · THORNHILL
-          </div>
-
-          <div style={{ lineHeight: 1.0, marginBottom: 20, position: 'relative' }}>
-            <div style={{ fontSize: 'clamp(30px, 4.5vw, 54px)', fontWeight: 900, color: WHITE, letterSpacing: 1 }}>SLAVNY</div>
-            <div style={{ fontSize: 'clamp(22px, 3vw, 38px)', fontWeight: 700, color: WHITE, letterSpacing: 4, marginBottom: 10 }}>HOMES</div>
-            <div style={{ fontSize: 'clamp(26px, 4vw, 50px)', fontWeight: 900, letterSpacing: -1, lineHeight: 1.05 }}>
-              <span style={{ color: RED }}>#WE</span><span style={{ color: WHITE }}>KNOW</span>
+          <div className="hero-strip" style={{
+            maxWidth: 1200, margin: '0 auto',
+            display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
+          }}>
+            {/* Left: CLHMS badges */}
+            <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+              <GoldBadge lines={['CERTIFIED','LUXURY HOME','CLHMS','GUILD']}/>
+              <GoldBadge lines={['CLHMS','MARKETING','SPECIALIST']}/>
             </div>
-            <div style={{ fontSize: 'clamp(26px, 4vw, 50px)', fontWeight: 900, color: WHITE, letterSpacing: -1, lineHeight: 1.05 }}>THE</div>
-            <div style={{ fontSize: 'clamp(26px, 4vw, 50px)', fontWeight: 900, color: WHITE, letterSpacing: -1, lineHeight: 1.05 }}>MARKET</div>
-          </div>
 
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 8 }}>
-            <button onClick={() => go('evaluation')} style={{
-              background: RED, color: WHITE, border: 'none',
-              padding: '12px 22px', fontFamily: 'inherit', fontWeight: 700, fontSize: 12,
-              cursor: 'pointer', letterSpacing: 1,
-            }}>GET YOUR FREE HOME EVALUATION</button>
-            <button onClick={() => go('difference')} style={{
-              background: 'transparent', color: WHITE,
-              border: '2px solid rgba(255,255,255,0.35)',
-              padding: '12px 20px', fontFamily: 'inherit', fontWeight: 700, fontSize: 12,
-              cursor: 'pointer', letterSpacing: 1,
-            }}>SEE WHY WE'RE #1</button>
+            {/* Center: stats + buttons */}
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap' }}>
+                {['500+ HOMES SOLD','CERTIFIED LUXURY SPECIALISTS','CLHMS GUILD'].map(s => (
+                  <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 3, height: 14, background: RED, display: 'inline-block', flexShrink: 0 }}/>
+                    <span style={{ fontSize: 10, color: WHITE, fontWeight: 700, letterSpacing: 1 }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button onClick={() => go('evaluation')} style={{
+                  background: RED, color: WHITE, border: 'none',
+                  padding: '10px 18px', fontFamily: 'inherit', fontWeight: 700,
+                  fontSize: 11, cursor: 'pointer', letterSpacing: 1,
+                }}>GET YOUR FREE HOME EVALUATION</button>
+                <button onClick={() => go('difference')} style={{
+                  background: 'rgba(255,255,255,0.08)', color: WHITE,
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '10px 16px', fontFamily: 'inherit', fontWeight: 700,
+                  fontSize: 11, cursor: 'pointer', letterSpacing: 1,
+                }}>SEE WHY WE'RE #1</button>
+              </div>
+            </div>
+
+            {/* Right: Billion Dollar Guild badge */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+              <GoldBadge lines={['BILLION','DOLLAR','GUILD']}/>
+              <RemaxBalloon size={22}/>
+            </div>
           </div>
         </div>
       </section>
